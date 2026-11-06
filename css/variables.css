@@ -1,0 +1,17 @@
+:root {
+  --bg: #07070e;
+  --surface: #0c0c18;
+  --card: #111122;
+  --border: #1e1e32;
+  --border2: #2a2a44;
+  --gold: #c8a84a;
+  --gold-l: #e8c870;
+  --text: #e2ddd4;
+  --muted: #8880a0;
+  --dim: #5a5570;
+  --danger: #e05555;
+  --success: #50c878;
+  --font-body: 'Outfit', sans-serif;
+  --font-display: 'Playfair Display', serif;
+  --font-mono: 'DM Mono', monospace;
+}

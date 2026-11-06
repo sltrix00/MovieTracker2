@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cinelog — Movie Tracker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Outfit:wght@300;400;500;600&family=DM+Mono:wght@400&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+
+<!-- ═══════════════════ AUTH SCREEN ═══════════════════ -->
+<div id="auth-screen">
+  <div class="auth-box">
+    <div class="auth-logo">Cinelog</div>
+    <div class="auth-tagline">Your personal film journal</div>
+    <div id="auth-msg"></div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" data-tab="login">Sign In</button>
+      <button class="auth-tab" data-tab="register">Register</button>
+    </div>
+
+    <div id="login-form">
+      <div class="form-group"><label>Email</label><input type="email" id="li-email" placeholder="you@example.com" autocomplete="email"></div>
+      <div class="form-group"><label>Password</label><input type="password" id="li-pass" placeholder="••••••••" autocomplete="current-password"></div>
+      <button class="btn btn-primary" data-action="login">Sign In</button>
+    </div>
+
+    <div id="register-form" class="hidden">
+      <div class="form-group"><label>Email</label><input type="email" id="rg-email" placeholder="you@example.com" autocomplete="email"></div>
+      <div class="form-group"><label>Password</label><input type="password" id="rg-pass" placeholder="Min 6 characters" autocomplete="new-password"></div>
+      <div class="form-group"><label>Confirm Password</label><input type="password" id="rg-pass2" placeholder="••••••••" autocomplete="new-password"></div>
+      <button class="btn btn-primary" data-action="register">Create Account</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ APP SCREEN ═══════════════════ -->
+<div id="app-screen">
+  <div class="app-layout">
+
+    <nav id="sidebar">
+      <div class="sidebar-logo">Cinelog<span>Film Journal</span></div>
+      <div class="sidebar-nav">
+        <div class="nav-section">Overview</div>
+        <div class="nav-item active" data-view="dashboard"><span class="nav-icon">◈</span>Dashboard</div>
+        <div class="nav-item" data-view="movies"><span class="nav-icon">▤</span>All Movies</div>
+        <div class="nav-section" style="margin-top:10px">Manage</div>
+        <div class="nav-item" data-view="add"><span class="nav-icon">＋</span>Add Movie</div>
+        <div class="nav-item" data-view="import"><span class="nav-icon">↑</span>Import File</div>
+        <div class="nav-section" style="margin-top:10px">Insights</div>
+        <div class="nav-item" data-view="stats"><span class="nav-icon">◎</span>Statistics</div>
+        <div class="nav-item" data-view="top"><span class="nav-icon">★</span>Top Picks</div>
+      </div>
+      <div class="sidebar-footer">
+        <div class="sidebar-email" id="sb-email"></div>
+        <button class="btn btn-outline btn-sm" data-action="logout">Sign Out</button>
+      </div>
+    </nav>
+
+    <main id="main">
+
+      <!-- DASHBOARD -->
+      <div class="view active" id="view-dashboard">
+        <div class="page-header">
+          <div class="page-title">Dashboard</div>
+          <div class="page-subtitle" id="dash-sub">Welcome back</div>
+        </div>
+        <div class="stat-grid" id="dash-stats"></div>
+        <div id="dash-recent"></div>
+      </div>
+
+      <!-- ALL MOVIES -->
+      <div class="view" id="view-movies">
+        <div class="page-header">
+          <div class="page-title">All Movies</div>
+          <div class="page-subtitle" id="mv-sub"></div>
+        </div>
+        <div class="movies-controls">
+          <input class="ctrl-input ctrl-search" type="text" id="mv-search" placeholder="🔍  Search titles…">
+          <select class="ctrl-input ctrl-select" id="mv-year">
+            <option value="">All Years</option>
+          </select>
+          <select class="ctrl-input ctrl-select" id="mv-sort">
+            <option value="date-d">Date: Newest</option>
+            <option value="date-a">Date: Oldest</option>
+            <option value="rate-d">Rating: High</option>
+            <option value="rate-a">Rating: Low</option>
+            <option value="az">Title: A–Z</option>
+          </select>
+          <label class="checkbox-row"><input type="checkbox" id="mv-rw">Rewatches only</label>
+          <button class="btn btn-outline btn-sm" data-action="export-json" style="margin-left:auto">⬇ Export JSON</button>
+        </div>
+        <div class="movies-table-wrap">
+          <table>
+            <thead><tr>
+              <th>#</th><th>Title</th><th>Year</th><th>Watched</th><th>Rating</th><th>Notes</th><th></th>
+            </tr></thead>
+            <tbody id="mv-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ADD MOVIE -->
+      <div class="view" id="view-add">
+        <div class="page-header">
+          <div class="page-title">Add Movie</div>
+          <div class="page-subtitle">Log a film you've watched</div>
+        </div>
+        <div class="add-form-wrap">
+          <div id="add-msg"></div>
+          <div class="form-row">
+            <div class="form-group"><label>Movie Title *</label><input type="text" id="a-title" placeholder="e.g. Inception"></div>
+            <div class="form-group"><label>Movie Year *</label><input type="number" id="a-myear" placeholder="e.g. 2010" min="1888" max="2030"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>Date Watched</label><input type="date" id="a-date"></div>
+            <div class="form-group"><label>Your Rating (0–10)</label><input type="number" id="a-rating" placeholder="e.g. 8.5" min="0" max="10" step="0.1"></div>
+          </div>
+          <div class="form-group">
+            <label class="checkbox-row"><input type="checkbox" id="a-rw">This is a rewatch</label>
+          </div>
+          <div class="form-group"><label>Notes (optional)</label><textarea id="a-notes" rows="2" placeholder="Thoughts, emoji…" style="resize:vertical"></textarea></div>
+          <button class="btn btn-primary" data-action="add-movie">Add to Journal</button>
+        </div>
+      </div>
+
+      <!-- IMPORT -->
+      <div class="view" id="view-import">
+        <div class="page-header">
+          <div class="page-title">Import</div>
+          <div class="page-subtitle">Upload .txt (Russian format), .json, or .csv</div>
+        </div>
+        <div class="drop-zone" id="drop-zone">
+          <div class="drop-zone-icon">📂</div>
+          <div class="drop-zone-text">
+            <strong>Click to choose file</strong> or drag &amp; drop<br>
+            .txt · .json · .csv &nbsp;— multiple files OK
+          </div>
+          <input type="file" id="file-inp" class="hidden" accept=".txt,.json,.csv" multiple>
+        </div>
+        <div class="format-hint">
+          <div style="font-size:.65rem;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:8px;">Expected .txt format</div>
+          <code>
+            Просмотренные фильмы 2024<br>
+            1. Movie Name (2009) - 23:30 5 января (8/10)<br>
+            2. Another Film (2018) - 03:00 3 января (7.5/10) 🔁 Пересмотрел.
+          </code>
+        </div>
+        <div id="import-preview"></div>
+        <div id="import-msg"></div>
+      </div>
+
+      <!-- STATISTICS -->
+      <div class="view" id="view-stats">
+        <div class="page-header">
+          <div class="page-title">Statistics</div>
+          <div class="page-subtitle">Visual analysis of your watching habits</div>
+        </div>
+        <div id="stats-content"></div>
+      </div>
+
+      <!-- TOP PICKS -->
+      <div class="view" id="view-top">
+        <div class="page-header">
+          <div class="page-title">Top Picks</div>
+          <div class="page-subtitle">Your highest-rated films</div>
+        </div>
+        <div class="top-controls">
+          <span style="font-size:.82rem;color:var(--muted)">Min. Rating:</span>
+          <input type="range" class="rating-slider" id="top-thresh" min="5" max="10" step="0.5" value="8">
+          <span style="font-family:'DM Mono',monospace;font-size:1.1rem;color:var(--gold)" id="top-thresh-lbl">8+</span>
+          <span style="font-size:.8rem;color:var(--dim)" id="top-count"></span>
+          <select class="ctrl-input ctrl-select" id="top-sort" style="margin-left:auto;width:auto">
+            <option value="rate">By Rating</option>
+            <option value="date">By Date</option>
+            <option value="az">A–Z</option>
+          </select>
+        </div>
+        <div class="top-grid" id="top-grid"></div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
